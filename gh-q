@@ -1,0 +1,19 @@
+#! /bin/bash
+set -e
+
+if ! type -p fzf >/dev/null; then
+  echo "error: install \`fzf\`(https://github.com/junegunn/fzf) to use this command" >&2
+  exit 1
+fi
+if ! type -p ghq >/dev/null; then
+  echo "error: install \`ghq\`(https://github.com/x-motemen/ghq) to use this command" >&2
+  exit 1
+fi
+
+REPO=$(gh repo list $1 $OPTS --json nameWithOwner -q '.[].nameWithOwner' | fzf)
+
+if [ $? -ne 0 ];then
+  exit 1
+fi
+
+ghq get "${REPO}" "${@:2}"
