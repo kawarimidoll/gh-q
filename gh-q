@@ -10,7 +10,26 @@ if ! type -p ghq >/dev/null; then
   exit 1
 fi
 
-REPO=$(gh repo list $1 $OPTS --json nameWithOwner -q '.[].nameWithOwner' | fzf)
+DEFAULT_USER=$(gh api user -q .login)
+
+REPO=$(gh api graphql --paginate -F owner="${1:-$DEFAULT_USER}" -f query='
+query ($owner: String!, $endCursor: String) {
+  repositoryOwner(login: $owner) {
+    repositories(
+      first: 30
+      after: $endCursor
+    ){
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        nameWithOwner
+      }
+    }
+  }
+}
+' -q '.data.repositoryOwner.repositories.nodes[].nameWithOwner' | fzf)
 
 if [ $? -ne 0 ];then
   exit 1
