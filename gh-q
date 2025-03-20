@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 if ! type -p fzf >/dev/null; then
