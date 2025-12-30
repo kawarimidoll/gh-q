@@ -36,6 +36,35 @@ To clone other user's repo, pass username:
 gh q kawarimidoll
 ```
 
+## Installation with Nix / home-manager
+
+Add the input to your `flake.nix`:
+
+```nix
+{
+  inputs = {
+    gh-q = {
+      url = "github:kawarimidoll/gh-q";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+Then add it to `programs.gh.extensions`:
+
+```nix
+{ inputs, pkgs, ... }:
+{
+  programs.gh = {
+    enable = true;
+    extensions = [
+      inputs.gh-q.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ];
+  };
+}
+```
+
 ## Prior art
 
 This extension is strongly inspired by [hashue/gh-fuzzyclone](https://github.com/hashue/gh-fuzzyclone).
